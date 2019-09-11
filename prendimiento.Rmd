@@ -36,19 +36,44 @@ buinzoo <- arboles %>% filter(proyecto_id == "Buinzoo_Buin")
 
 buinzoo_numbers <- buinzoo %>% 
   select(vivos, muertos, bueno, regular, malo, seco, comido)  %>% 
-  summarise_all(funs(sum), na.rm = TRUE)
+  summarise_all(sum, na.rm = TRUE)
 
-gather(buinzoo_numbers, key = "type", value = "count")
+tidy_format <- gather(buinzoo_numbers, key = "type", value = "count")
+
+ggplot(data= tidy_format, aes(x=type, y=count)) +
+  geom_bar(stat = "identity")
+```
+
+
+
+```{r}
+summary <- arboles %>% 
+  select(proyecto_id, vivos, muertos, bueno, regular, malo, seco, comido)%>%
+  group_by(proyecto_id) %>%
+  summarise_all(sum, na.rm = TRUE)%>%
+  left_join(prendimiento$proyectos) %>%
+  select(proyecto_id, vivos, muertos, bueno, regular, malo, seco, comido, arboles_plantados, arboles_muestreo) %>%
+  mutate(prendimiento = vivos/arboles_plantados)
+
+summary 
+```
+
+
+```{r}
+ggplot(data= summary, aes(x=proyecto_id, y=prendimiento)) +
+  geom_bar(stat = "identity")
+
 ```
 
 
 
 
+```{r}
+arboles %>%
+  group_by(proyecto_id, especie)%>%
+  summarise(total_vivos = sum(vivos, na.rm=TRUE))
 
-
-
-
-
+```
 
 
 
